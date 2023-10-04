@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="sdx.talkit.page.TalkActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@drawable/border_bottom"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_talk_back"
+            android:layout_width="45dp"
+            android:layout_height="64dp"
+            android:background="@color/white"
+            android:paddingStart="5dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="18dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/backward"></ImageButton>
+
+        <TextView
+            android:id="@+id/tv_talk_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:layout_weight="1"
+            android:gravity="center|center_vertical"
+            android:textSize="22sp"></TextView>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/message_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/talk_bg"
+        android:divider="@color/talk_bg"
+        android:dividerHeight="0dp"
+        android:footerDividersEnabled="false"
+        android:transcriptMode="alwaysScroll"></ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/border_top"
+        android:orientation="horizontal"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp">
+
+        <EditText
+            android:id="@+id/talk_msg_input"
+            android:layout_width="328dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"></EditText>
+
+        <ImageView
+            android:id="@+id/id_more"
+            android:background="@color/blue_100"
+            android:layout_width="66dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/add" />
+
+        <Button
+            android:id="@+id/btn_talk_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="5dp"
+            android:text="发送"
+            android:textSize="20sp"></Button>
+
+    </LinearLayout>
+
+</LinearLayout>
