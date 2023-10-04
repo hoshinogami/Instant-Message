@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="sdx.talkit.page.TalkActivity">
+    tools:context="sdx.talk.page.TalkActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

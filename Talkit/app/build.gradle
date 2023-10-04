@@ -7,7 +7,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "sdx.talkit"
+        applicationId "sdx.talk"
         minSdkVersion 26
         targetSdkVersion 30
         versionCode 1

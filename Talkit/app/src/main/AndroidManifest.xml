@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="sdx.talkit">
+    package="sdx.talk">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -18,14 +18,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:theme="@style/Theme.Talkit">
-        <activity android:name="sdx.talkit.page.TalkActivity" />
-        <activity android:name="sdx.talkit.page.RegisterActivity" />
-        <activity android:name="sdx.talkit.page.HomeActivity" />
-        <service android:name="sdx.talkit.net.WebSocketService" />
+        android:theme="@style/Theme.Talk">
+        <activity android:name="sdx.talk.page.TalkActivity" />
+        <activity android:name="sdx.talk.page.RegisterActivity" />
+        <activity android:name="sdx.talk.page.HomeActivity" />
+        <service android:name="sdx.talk.net.WebSocketService" />
 
         <activity
-            android:name="sdx.talkit.page.LoginActivity"
+            android:name="sdx.talk.page.LoginActivity"
             android:label="@string/title_activity_login" />
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
@@ -33,7 +33,7 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <activity
-            android:name="sdx.talkit.MainActivity"
+            android:name="sdx.talk.MainActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
