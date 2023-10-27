@@ -1,8 +1,12 @@
 package sdx.talk.page;
 
+import static sdx.talk.entity.Constants.YOU_ID;
+import static sdx.talk.entity.Constants.MY_ID;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,6 +23,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.yanzhenjie.permission.AndPermission;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,6 +48,7 @@ import sdx.talk.component.InfoFragment;
 import sdx.talk.component.InputDialog;
 import sdx.talk.dao.DB;
 import sdx.talk.entity.ChatItem;
+import sdx.talk.entity.Constants;
 import sdx.talk.entity.Message;
 import sdx.talk.entity.User;
 import sdx.talk.net.WebSocketService;
@@ -100,13 +107,24 @@ public class HomeActivity extends AppCompatActivity {
                     }
                     // 如果该消息未被添加，则添加
                     if (!contains){
+                        String address= Constants.CAMERA_IP;
                         //如果是图片
-                        if(msg.getType()==1){
-                            Integer index=msg.getText().indexOf("MyAlbums");
-                            downloadFile(msg.getText().substring(index+9));
+                        if(msg.getType()==0||msg.getType()==1) {
+                            if (msg.getType() == 1) {
+                                Integer index = msg.getText().indexOf("MyAlbums");
+                                Log.i("111",msg.getText().substring(index + 8));
+                                downloadFile(msg.getText().substring(index + 8));
+                            }
+                            item.getMsgList().add(msg);
+                            DB.insertMessage(msg);
                         }
-                        item.getMsgList().add(msg);
-                        DB.insertMessage(msg);
+                        //通话
+                        else{
+                            Intent vIntent = new Intent(HomeActivity.this, VideoActivity.class);
+                            vIntent.putExtra(MY_ID, String.valueOf(id));
+                            vIntent.putExtra(YOU_ID, msg.getText());
+                            startActivity(vIntent);
+                        }
                     }
                     break;
                 }
@@ -137,6 +155,20 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        String[] perms = {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
+        if (!AndPermission.hasPermissions(this, perms)) {
+            // 请求相机和麦克风权限
+            AndPermission.with(this)
+                    .runtime()
+                    .permission(perms)
+                    .onGranted(permissions -> {
+                        // 权限被授予时执行的操作
+                    })
+                    .onDenied(permissions -> {
+                        // 权限被拒绝时执行的操作
+                    })
+                    .start();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -202,11 +234,14 @@ public class HomeActivity extends AppCompatActivity {
             if (result.getInt("code") == 0){
                 JSONArray array = result.getJSONArray("data");
                 int length = array.length();
+                this.friends.clear();
                 for (int i = 0; i < length; i++) {
                     JSONObject obj = array.getJSONObject(i);
                     User user = User.fromJSONObj(obj);
+
                     System.out.println(user);
                     this.friends.add(user);
+
                 }
                 this.friendsFragment.update();
             }
@@ -294,7 +329,7 @@ public class HomeActivity extends AppCompatActivity {
     //下载图片
     private void downloadFile(String fileName){
         OkHttpClient client = new OkHttpClient();
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://10.21.204.243:3000/image/download").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(Constants.USER_IP+"/image/download").newBuilder();
         urlBuilder.addQueryParameter("filename",fileName);
 
         Request request = new Request

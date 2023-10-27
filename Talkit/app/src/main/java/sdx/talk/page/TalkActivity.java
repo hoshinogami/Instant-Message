@@ -1,5 +1,8 @@
 package sdx.talk.page;
 
+import static sdx.talk.entity.Constants.YOU_ID;
+import static sdx.talk.entity.Constants.MY_ID;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -54,7 +58,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 import sdx.talk.component.DialogManager;
 import sdx.talk.component.MessageListAdapter;
+import sdx.talk.databinding.ActivityTalkBinding;
 import sdx.talk.entity.ChatItem;
+import sdx.talk.entity.Constants;
 import sdx.talk.entity.Message;
 import sdx.talk.R;
 import sdx.talk.dao.DB;
@@ -62,6 +68,8 @@ import sdx.talk.net.Http;
 import sdx.talk.net.WebSocketService;
 
 public class TalkActivity extends AppCompatActivity {
+
+
     private MessageListAdapter messageListAdapter;
     private ChatItem chatItem;
     private ImageView img;
@@ -69,7 +77,6 @@ public class TalkActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_CAMERA = 103; //相机
     public static final int REQUEST_CODE_ALBUM = 102; //相册
 
-    private Uri photoUri;//记录图片地址
 
     private Context context = TalkActivity.this;
     ChatItem item;
@@ -89,12 +96,20 @@ public class TalkActivity extends AppCompatActivity {
                     }
                 }
                 if (!contains){
-                    if(msg.getType()==1){
-                        Integer index=msg.getText().indexOf("MyAlbums");
-                        downloadFile(msg.getText().substring(index+9));
+                   // String address=Constants.CAMERA_IP;
+                    if(msg.getType()==2) {
+//                        Intent vIntent = new Intent(TalkActivity.this, VideoActivity.class);
+//                        vIntent.putExtra(MY_ID, selfId.toString());
+//                        vIntent.putExtra(YOU_ID, msg.getText());
+//                        startActivity(vIntent);
+                    }else {
+                        if (msg.getType() == 1) {
+                            Integer index = msg.getText().indexOf("MyAlbums");
+                            downloadFile(msg.getText().substring(index + 8));
+                        }
+                        TalkActivity.this.chatItem.getMsgList().add(msg);
+                        DB.insertMessage(msg);
                     }
-                    TalkActivity.this.chatItem.getMsgList().add(msg);
-                    DB.insertMessage(msg);
                 }
                 TalkActivity.this.messageListAdapter.notifyDataSetChanged();
             }
@@ -152,55 +167,6 @@ public class TalkActivity extends AppCompatActivity {
             messageListAdapter.notifyDataSetChanged();
         });
     }
-    // 判断是否有相机权限
-    private void ifHaveCameraPermission() {
-        /**
-         * AndPermission.hasPermissions：判断是否有相对应的权限
-         *      Permission.Group.CAMERA：摄像权限
-         */
-        if (!AndPermission.hasPermissions(this, Permission.Group.CAMERA)) {
-            /**
-             * AndPermission：引用权限相关库
-             *      onGranted：允许权限
-             *      onDenied：拒绝权限
-             */
-            // 动态申请权限
-            AndPermission.with(this).runtime().permission(Permission.Group.CAMERA)
-                    .onGranted(permissions -> {
-                        openCamera();
-                    })
-                    .onDenied(denieds -> {
-                        if (denieds != null && denieds.size() > 0) {
-                            for (int i = 0; i < denieds.size(); i++) {
-                                if (!shouldShowRequestPermissionRationale(denieds.get(i))) {
-                                    DialogManager.permissionDialog(this, "没有拍摄和录制权限！");
-                                    break;
-                                }
-                            }
-                        }
-                    }).start();
-        } else {
-            // 有权限 打开相机
-            openCamera();
-        }
-    }
-
-    // 打开相机
-    private void openCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Build.VERSION.SDK_INT：获取当前系统sdk版本
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // 适配Android 7.0文件权限，通过FileProvider创建一个content类型的Uri
-            String fileName = String.format("fr_crop_%s.jpg", System.currentTimeMillis());
-            File cropFile = new File(this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
-            photoUri = FileProvider.getUriForFile(this, this.getPackageName() + ".FileProvider", cropFile);//7.0
-        } else {
-            photoUri = getDestinationUri();
-        }
-        // android11以后强制分区存储，外部资源无法访问，所以添加一个输出保存位置，然后取值操作
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-        startActivityForResult(intent, REQUEST_CODE_CAMERA);
-    }
 
     // 判断是否有文件存储权限
     private void ifHaveAlbumPermission(Activity activity) {
@@ -243,10 +209,10 @@ public class TalkActivity extends AppCompatActivity {
                     Uri selectedImageUri = data.getData();
                     Cursor cursor = getContentResolver().query(selectedImageUri, null, null, null, null);
                     cursor.moveToFirst();//将光标移到第一行
-                    String imgNo = cursor.getString(0); //图片编号
-                    String imgPath = cursor.getString(1); //图片文件路径
+                    // String imgNo = cursor.getString(0); //图片编号
+                    // String imgPath = cursor.getString(1); //图片文件路径
                     String imgName = cursor.getString(2); //图片大小
-                    String imgSize = cursor.getString(3);//图片文件
+                   // String imgSize = cursor.getString(3);//图片文件
                     ContentResolver cr = this.getContentResolver();
                     try {
                         //根据Uri获取流文件
@@ -277,8 +243,8 @@ public class TalkActivity extends AppCompatActivity {
                     //Glide.with(context).load(UCrop.getOutput(data)).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(img);
                     break;
                 case REQUEST_CODE_CAMERA:
-                    Glide.with(context).load(UCrop.getOutput(data)).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(img);
-//                    Glide.with(context).load(UCrop.getOutput(data)).into(img);//方形图像
+                    //接口
+
                     break;
             }
         }
@@ -295,11 +261,11 @@ public class TalkActivity extends AppCompatActivity {
 //                .start(this);
 //    }
 
-    private Uri getDestinationUri() {
-        String fileName = String.format("fr_crop_%s.jpg", System.currentTimeMillis());
-        File cropFile = new File(this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
-        return Uri.fromFile(cropFile);
-    }
+//    private Uri getDestinationUri() {
+//        String fileName = String.format("fr_crop_%s.jpg", System.currentTimeMillis());
+//        File cropFile = new File(this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
+//        return Uri.fromFile(cropFile);
+//    }
 
     private void showBottomDialog() {
         // 使用Dialog、设置style
@@ -320,8 +286,21 @@ public class TalkActivity extends AppCompatActivity {
         dialog.findViewById(R.id.tv_take_photo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                String address = Constants.CAMERA_IP;
+              String Id = selfId.toString();//binding.RoomEditText.getText().toString();
+                Message msg = new Message(selfId, item.getId(), Id, System.currentTimeMillis(),2);
+                Intent intent = new Intent();
+                intent.setAction(WebSocketService.SendMsgAction);
+                intent.putExtra("message",msg.toJSONStr());
+                sendBroadcast(intent);
+                if (!TextUtils.isEmpty(Id)) {
+                    Intent vIntent = new Intent(TalkActivity.this, VideoActivity.class);
+                    vIntent.putExtra(MY_ID, selfId.toString());
+                    vIntent.putExtra(YOU_ID,item.getId().toString());
+                    startActivity(vIntent);
+                }
                 // 判断是否有相机权限
-                ifHaveCameraPermission();
+                //ifHaveCameraPermission();
                 dialog.dismiss();
             }
         });
@@ -351,7 +330,7 @@ public class TalkActivity extends AppCompatActivity {
     //下载图片
     private void downloadFile(String fileName){
             OkHttpClient client = new OkHttpClient();
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://10.21.204.243:3000/image/download").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(Constants.USER_IP+"image/download").newBuilder();
         urlBuilder.addQueryParameter("filename",fileName);
 
         Request request = new Request

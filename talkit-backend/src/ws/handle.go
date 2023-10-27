@@ -93,7 +93,9 @@ func (handler *MsgHandler) Handle(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("josn unmarshal error %v \n", err)
 			break
 		}
-		err = SaveMsg(handler.db, msg)
+		if msg.Type != 2 {
+			err = SaveMsg(handler.db, msg)
+		}
 		if err != nil {
 			return
 		}
@@ -103,7 +105,9 @@ func (handler *MsgHandler) Handle(w http.ResponseWriter, r *http.Request) {
 			sendChannel <- *msg
 		} else {
 			// 不在线
-			handler.stockMap.save(msg.To, msg)
+			if msg.Type != 2 {
+				handler.stockMap.save(msg.To, msg)
+			}
 		}
 	}
 	channel <- CloseMsg()

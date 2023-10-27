@@ -15,13 +15,17 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import java.net.URI;
 
+import sdx.talk.entity.Constants;
+
 public class WebSocketService extends Service {
     public static final String RecvMsgAction = "talkit.net.talkit.WebSocketService.ReceiveMessage";
     public static final String SendMsgAction = "talkit.net.talkit.WebSocketService.SendMessage";
     public static final String TAG = "WebSocketService";
 
     private final WebSocketServiceBinder binder = new WebSocketServiceBinder();
-    private final WebSocketClient client = new WebSocketClient(URI.create("ws://10.21.204.243:3000/ws")){
+//    WebSocket 客户端初始化
+    private final WebSocketClient client = new WebSocketClient(URI.create(Constants.MESSAGE_IP)){
+        //重写方法
         @Override
         public void onOpen(ServerHandshake handShakeData) {
             Log.i(TAG, "onOpen");
@@ -49,7 +53,9 @@ public class WebSocketService extends Service {
         super.onCreate();
         Log.i(TAG, "onCreate ");
     }
-
+//  messageReceiver 广播接收器：
+//定义了一个广播接收器，用于接收来自应用其他部分的消息发送请求。
+//当收到消息发送请求广播时，会调用 WebSocket 客户端的 send 方法将消息发送给服务器。
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -60,7 +66,8 @@ public class WebSocketService extends Service {
             }
         }
     };
-
+//  这是一个公开方法，用于启动 WebSocket 连接。在该方法中，客户端会尝试连接到 WebSocket 服务器，并发送身份验证信息。
+//通过注册 messageReceiver 来监听发送消息请求广播。
     public void connect(Integer id,String pswd){
         try {
             client.connectBlocking();

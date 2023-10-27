@@ -17,9 +17,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import sdx.talk.entity.Constants;
 
 public class Http {
-    public final static String HTTP_URL_PREFIX = "http://10.21.204.243:3000";
+    public final static String HTTP_URL_PREFIX = Constants.USER_IP;
     public final static String TAG = "Http ";
 
     public static interface ResponseCallBack{
