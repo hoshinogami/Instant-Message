@@ -9,7 +9,5 @@
  - 执行命令：
     go run main.go
 
-   qemu_pipe_open_ns:62: Could not connect to the 'pipe:qemud:network' service: Invalid argument
-Failed to open QEMU pipe 'qemud:network': Invalid argument
-qemu_pipe_open_ns:62: Could not connect to the 'pipe:qemud:wififorward' service: Invalid argument
-RemoteConnection failed to initialize: RemoteConnection failed to open pipe
+## 数据库
+   执行talk.sql
